@@ -48,12 +48,30 @@ private class ReusableStatement( val wrapped: PreparedStatement, formatter: SQLF
     }
 
     /**
+     * Submits the batch of commands for execution.
+     * @return array of update counts
+     */
+    def executeBatch(): Array[Int] = {
+      parameterIndex = StartIndex
+      wrapped.executeBatch()
+    }
+
+    /**
      * Sets all parameters and executes the statement 
      * @return the number of affected records
      */
     def executeWith( params: Formattable* ): Int = {
         params.foreach( this << _ )
         execute
+    }
+
+    /**
+     * Sets all parameters and adds them to this statement's batch of commands.
+     */  
+    def addBatch( params: Formattable* ) = {
+        params.foreach( this << _ )
+        wrapped.addBatch()
+        parameterIndex = StartIndex
     }
 
     /**
