@@ -65,6 +65,12 @@ final case class DatabaseConfig(
      *         or closed.
      */
     def transaction[T]( block: ( Transaction ) => T ) = InTransaction( block )( this )
+
+    /**
+     * @return a connection from the pool
+     */
+    def connection = ConnectionPools.getOrCreatePool( this ).getConnection()
+
 }
 
 /**
